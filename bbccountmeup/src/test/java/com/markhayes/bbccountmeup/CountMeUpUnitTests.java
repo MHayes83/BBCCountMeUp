@@ -28,6 +28,8 @@ public class CountMeUpUnitTests
     
     @LocalServerPort
     private int port;
+    
+    private boolean testDuration = false;
 	
 	@Test
 	@SuppressWarnings("unchecked")
@@ -48,34 +50,48 @@ public class CountMeUpUnitTests
         Assert.assertEquals((Integer)2500000, results.get("Candidate 4"));
         Assert.assertEquals((Integer)3000000, results.get("Candidate 5"));
         
-        Assert.assertTrue(countMeUpDuration<1000);
+        if(testDuration) {
+        	Assert.assertTrue(countMeUpDuration<1000);
+        }
     }
 	
 	private List<Vote> prepareVotes() {
 		List<Vote> votes = new ArrayList<Vote>();
 			
 		//valid votes
+		//Assume average of 2 votes by voter
+		for(int i=0; i<250000 ; i++) {
+			String user = UUID.randomUUID().toString();
+			votes.add(new Vote("Candidate 1", user));
+			votes.add(new Vote("Candidate 1", user));
+		}	
 		for(int i=0; i<500000 ; i++) {
-			votes.add(new Vote("Candidate 1", UUID.randomUUID().toString()));
+			String user = UUID.randomUUID().toString();
+			votes.add(new Vote("Candidate 2", user));
+			votes.add(new Vote("Candidate 2", user));
 		}
 		for(int i=0; i<1000000 ; i++) {
-			votes.add(new Vote("Candidate 2", UUID.randomUUID().toString()));
+			String user = UUID.randomUUID().toString();
+			votes.add(new Vote("Candidate 3", user));
+			votes.add(new Vote("Candidate 3", user));
 		}
-		for(int i=0; i<2000000 ; i++) {
-			votes.add(new Vote("Candidate 3", UUID.randomUUID().toString()));
+		for(int i=0; i<1250000 ; i++) {
+			String user = UUID.randomUUID().toString();
+			votes.add(new Vote("Candidate 4", user));
+			votes.add(new Vote("Candidate 4", user));
 		}
-		for(int i=0; i<2500000 ; i++) {
-			votes.add(new Vote("Candidate 4", UUID.randomUUID().toString()));
-		}
-		for(int i=0; i<2999997 ; i++) {
-			votes.add(new Vote("Candidate 5", UUID.randomUUID().toString()));
-		}
+		//Three votes per voter for Candidate 5 to test edge case
+		for(int i=0; i<999999 ; i++) {
+			String user = UUID.randomUUID().toString();
+			votes.add(new Vote("Candidate 5", user));
+			votes.add(new Vote("Candidate 5", user));
+			votes.add(new Vote("Candidate 5", user));
+		}	
 		
 		//duplicate votes
 		for(int i=0; i<1000000 ; i++) {
 			votes.add(new Vote("Candidate 5", "Duplicate Voter"));
 		}
-
 		
 		return votes;
 		
